@@ -26,21 +26,3 @@ public sealed class WorldTimeSystem : ExtendedSystem
         });
     }
 }
-
-[System.Serializable]
-public struct WorldTimeComponent : IComponent
-{
-    public float Time;
-    public int TickCount;
-
-    void IComponent.Register(int world, int entity) => ECS.Core.ComponentMap<WorldTimeComponent>.TryAddOrSet(world, entity, this);
-}
-
-[System.Serializable]
-public struct WorldFixedTimeComponent : IComponent
-{
-    public float FixedTime;
-    public int FixedTickCount;
-
-    void IComponent.Register(int world, int entity) => ECS.Core.ComponentMap<WorldFixedTimeComponent>.TryAddOrSet(world, entity, this);
-}

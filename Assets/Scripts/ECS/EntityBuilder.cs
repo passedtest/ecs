@@ -1,5 +1,6 @@
 ﻿using ECS.Core;
 using System;
+using System.Collections.Generic;
 
 namespace ECS
 {
@@ -34,7 +35,7 @@ namespace ECS
         readonly int m_WorldUID;
         readonly int m_EntityUID;
 
-        readonly System.Collections.Generic.List<IComponent> m_Components;
+        readonly List<IComponent> m_Components;
 
         bool m_IsValid;
 
@@ -45,12 +46,21 @@ namespace ECS
 
             m_WorldUID = world.UID;
             m_EntityUID = world.AllocateEntityUID;
-            m_Components = new System.Collections.Generic.List<IComponent>();
+            m_Components = new List<IComponent>();
 
             m_IsValid = true;
         }
 
-        public EntityLazyBuilder AddComponenet(IComponent component)
+        public EntityLazyBuilder AddComponents(IEnumerable<IComponent> componenetns)
+        {
+            if (!m_IsValid)
+                throw new InvalidOperationException($"Entity '{m_EntityUID}' for world '{m_WorldUID}' is invalid");
+
+            m_Components.AddRange(componenetns);
+            return this;
+        }
+
+        public EntityLazyBuilder AddComponent(IComponent component)
         {
             if (!m_IsValid)
                 throw new InvalidOperationException($"Entity '{m_EntityUID}' for world '{m_WorldUID}' is invalid");
@@ -81,7 +91,7 @@ namespace ECS
             if (!builder.m_IsValid)
                 throw new InvalidOperationException($"Invalid builder");
 
-            return builder.AddComponenet(component);
+            return builder.AddComponent(component);
         }
     }
 }

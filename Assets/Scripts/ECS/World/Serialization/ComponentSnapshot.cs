@@ -7,22 +7,22 @@ namespace ECS
     public struct ComponentSnapshot
     {
         [SerializeField]
-        string t;
+        int t;
 
         [SerializeField]
         string d;
 
-        public ComponentSnapshot(object targetObject)
+        public ComponentSnapshot(IComponent targetComponenent)
         {
-            t = targetObject.GetType().FullName;
-            d = JsonUtility.ToJson(targetObject);
+            t = Core.ComponentTypeUtility.HashCodeOf(targetComponenent.GetType());
+            d = JsonUtility.ToJson(targetComponenent);
         }
 
-        public object Restore()
+        public IComponent Restore()
         {
-            var type = Type.GetType(t);
-            var result = JsonUtility.FromJson(d, type);
-            return result;
+            Core.ComponentTypeUtility.TryGetType(t, out var componenentType);
+            var result = JsonUtility.FromJson(d, componenentType);
+            return (IComponent)result;
         }
     }
 }

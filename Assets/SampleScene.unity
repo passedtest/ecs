@@ -306,6 +306,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1802478995}
   - component: {fileID: 1802478994}
+  - component: {fileID: 1802478996}
   m_Layer: 0
   m_Name: DemoManager
   m_TagString: Untagged
@@ -353,3 +354,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1802478996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1802478993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 137950046a13d784399d3104f12c14d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Components:
+  - id: 0
+  references:
+    version: 1
+    00000000:
+      type: {class: TransformComponent, ns: ECS, asm: Assembly-CSharp}
+      data:
+        Position: {x: 0, y: 0, z: 0}
+        Rotation: {x: 0.40570188, y: 0.5808986, z: -0.5738445, w: 0.41068894}
+        Scale: {x: 0, y: 0, z: 0}

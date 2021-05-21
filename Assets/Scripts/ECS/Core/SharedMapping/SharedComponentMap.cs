@@ -129,6 +129,14 @@ namespace ECS.Core
         public static IComponent ProduseComponennt<TComponent>() where TComponent : struct, IComponent =>
             Activator.CreateInstance<TComponent>();
 
+        public static IComponent ProduseComponennt(in Type type)
+        {
+            if (!type.IsComponenentType())
+                throw new InvalidOperationException($"'{type.FullName}' is not a componenent type");
+
+            return (IComponent)Activator.CreateInstance(type);
+        }
+
         public static Type OfType<TComponent>() where TComponent : struct, IComponent =>
             OfType(typeof(TComponent));
 

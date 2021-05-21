@@ -49,9 +49,11 @@ namespace ECS.Core
             return actualHashCode;
         }
 
+        public static bool TryGetType(in string fullName, out Type type) => s_TypeLookup.TryGetValue(ProduseHashCode(fullName), out type);
         public static bool TryGetType(in int hashCode, out Type type) => s_TypeLookup.TryGetValue(hashCode, out type);
 
-        static int ProduseHashCode(in Type type) => type.FullName.GetHashCode();
+        static int ProduseHashCode(in Type type) => ProduseHashCode(type.FullName);
+        static int ProduseHashCode(in string typeFullName) => typeFullName.GetHashCode();
 
         static void RebuildTypeLookups()
         {
@@ -66,6 +68,8 @@ namespace ECS.Core
         }
 
         public static bool IsComponenentType(this Type type) =>
-            s_ComponenentInterfaceType.IsAssignableFrom(type);
+            s_ComponenentInterfaceType.IsAssignableFrom(type) && !type.Equals(s_ComponenentInterfaceType);
+
+        public static IReadOnlyCollection<Type> GetComponenentTypes() => s_TypeLookup.Values;
     }
 }

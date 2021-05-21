@@ -34,13 +34,10 @@ namespace ECS
             UID = snapshot.ID;
 
             foreach (var componentCollection in snapshot.ComponentsData)
-            {
                 foreach (var serializedComponent in componentCollection)
-                {
-                    var component = (IComponent)serializedComponent.Restore();
-                    component.Register(snapshot.ID, componentCollection.Entity);
-                }
-            }
+                    serializedComponent
+                        .Restore()
+                        .Register(snapshot.ID, componentCollection.Entity);
         }
 
         public void UpdateForm(ComponentMapSnapshot snapshot)
