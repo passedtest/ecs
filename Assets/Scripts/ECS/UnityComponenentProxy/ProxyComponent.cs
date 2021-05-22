@@ -12,8 +12,16 @@ namespace ECS.UnityProxy
 
         void OnValidate()
         {
-            if (CanAddComponent(typeof(TransformComponent)))
-                m_Components.Insert(0, new TransformComponent());
+            foreach(var componenentHash in ProxyComponentUtility.GetPersistentComponenentTypeHashCodes())
+            {
+                if (!Core.ComponentTypeUtility.TryGetType(componenentHash, out var componenentType))
+                    continue;
+
+                if (!CanAddComponent(componenentType))
+                    continue;
+
+                m_Components.Insert(0, Core.SharedComponentMap.ProduseComponennt(componenentType));
+            }
         }
 
         public bool TryAddComponenent(Type componenentType)
@@ -38,6 +46,13 @@ namespace ECS.UnityProxy
             EntityLazyBuilder.New(world).AddComponents(m_Components);
 
         public IReadOnlyList<IComponent> Components => m_Components;
+
+        public void SetTransform(TransformComponent newTransformComponent)
+        {
+            for(var i = 0; i < m_Components.Count; i++)
+                if (m_Components[i] is TransformComponent)
+                    m_Components[i] = newTransformComponent;
+        }
     }    
 }
 

@@ -6,6 +6,6 @@
         public float Time;
         public int TickCount;
 
-        void IComponent.Register(int world, int entity) => Core.ComponentMap<WorldTimeComponent>.TryAddOrSet(world, entity, this);
+        void IComponent.Register(in int world, in int entity) => Core.ComponentMap<WorldTimeComponent>.TryAddOrSet(world, entity, this);
     }
 }

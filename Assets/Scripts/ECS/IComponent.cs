@@ -1,6 +1,6 @@
 ﻿public interface IComponent 
 {
-    void Register(int world, int entity);
+    void Register(in int world, in int entity);
 }
 
 /// TODO: Binary serialization;

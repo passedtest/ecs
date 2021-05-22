@@ -7,6 +7,6 @@
         public float FixedTime;
         public int FixedTickCount;
 
-        void IComponent.Register(int world, int entity) => Core.ComponentMap<WorldFixedTimeComponent>.TryAddOrSet(world, entity, this);
+        void IComponent.Register(in int world, in int entity) => Core.ComponentMap<WorldFixedTimeComponent>.TryAddOrSet(world, entity, this);
     }
 }

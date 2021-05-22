@@ -63,12 +63,12 @@ public sealed class VIewInstanceSystem : ExtendedSystem
     }
 }
 
-
+[ECS.UnityProxy.ProxyComponent(ECS.UnityProxy.ProxyComponenentStateOverride.Exclude)]
 public struct ViewComponent : IComponent
 {
     public int ObjectReference;
     public bool IsReferenceIdValid => ECS.Core.GameObjectUtils.IsReferenceIdValid(ObjectReference);
-    void IComponent.Register(int world, int entity) => ECS.Core.ComponentMap<ViewComponent>.TryAddOrSet(world, entity, this);
+    void IComponent.Register(in int world, in int entity) => ECS.Core.ComponentMap<ViewComponent>.TryAddOrSet(world, entity, this);
 }
 
 

@@ -67,24 +67,45 @@ public class ProxyComponentEditor : Editor
 
                         if (m_Foldouts[managedReferenceFullTypename])
                         {
-                            foreach (SerializedProperty prop in property)
+                            var isTransformComponenent = type.Equals(typeof(ECS.TransformComponent));
+                            if (isTransformComponenent)
                             {
-                                if (prop.depth > 2)
-                                    continue;
-
-                                EditorGUILayout.BeginHorizontal();
-                                if (prop.propertyType != SerializedPropertyType.Quaternion)
-                                    EditorGUILayout.PropertyField(prop, true);
-                                else
-                                {
-                                    EditorGUI.BeginChangeCheck();
-                                    var eurelAngels = EditorGUILayout.Vector3Field(prop.displayName, prop.quaternionValue.eulerAngles);
-                                    if (EditorGUI.EndChangeCheck())
-                                        prop.quaternionValue = Quaternion.Euler(eurelAngels);
-
-                                }
-                                EditorGUILayout.EndHorizontal();
+                                property.managedReferenceValue = ECS.TransformComponent.Create(proxyCompopnenent.transform);
+                                EditorGUILayout.HelpBox("Chanage object's transofrm in order to change this componenent", MessageType.Info);
                             }
+
+                            var isGameObjectComponenent = type.Equals(typeof(ECS.GameObjectProxyComponenet));
+                            if (isGameObjectComponenent)
+                            {
+                                property.managedReferenceValue = ECS.GameObjectProxyComponenet.Create(proxyCompopnenent.gameObject);
+                                EditorGUILayout.HelpBox("Chanage object in order to change this componenent", MessageType.Info);
+                            }
+
+                            EditorGUI.BeginDisabledGroup(isTransformComponenent || isGameObjectComponenent);
+                            {
+                                foreach (SerializedProperty prop in property)
+                                {
+                                    if (prop.depth > 2)
+                                        continue;
+
+                                    EditorGUILayout.BeginHorizontal();
+                                    {
+                                        if (prop.propertyType != SerializedPropertyType.Quaternion)
+                                            EditorGUILayout.PropertyField(prop, true);
+                                        else
+                                        {
+                                            EditorGUI.BeginChangeCheck();
+                                            var eurelAngels = EditorGUILayout.Vector3Field(prop.displayName, prop.quaternionValue.eulerAngles);
+                                            if (EditorGUI.EndChangeCheck())
+                                                prop.quaternionValue = Quaternion.Euler(eurelAngels);
+
+                                        }
+                                    }
+                                    EditorGUILayout.EndHorizontal();
+                                }
+                            }
+                            EditorGUI.EndDisabledGroup();
+
                         }
                     }
                     EditorGUILayout.EndVertical();

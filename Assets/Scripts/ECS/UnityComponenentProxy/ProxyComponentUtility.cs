@@ -35,6 +35,7 @@ namespace ECS.UnityProxy
         }
 
         public static IReadOnlyCollection<int> GetComponenentTypeHashCodes() => s_AllProxyComponenents;
+        public static IReadOnlyCollection<int> GetPersistentComponenentTypeHashCodes() => s_PersistentComponenentTypes;
 
         public static bool IsPersistentProxyComponent(this Type type) =>
             s_PersistentComponenentTypes.Contains(Core.ComponentTypeUtility.HashCodeOf(type));

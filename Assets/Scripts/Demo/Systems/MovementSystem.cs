@@ -63,7 +63,7 @@ public struct BehaviourComponent : IComponent
     public float Speed;
     public float DestinationChangePeriod;
 
-    void IComponent.Register(int world, int entity) => ECS.Core.ComponentMap<BehaviourComponent>.TryAddOrSet(world, entity, this);
+    void IComponent.Register(in int world, in int entity) => ECS.Core.ComponentMap<BehaviourComponent>.TryAddOrSet(world, entity, this);
 }
 
 [System.Serializable]
@@ -72,7 +72,7 @@ public struct DestinationComponent : IComponent
     public Vector3 Destination;
     public float NextDestinationUpdateTime;
 
-    void IComponent.Register(int world, int entity) => ECS.Core.ComponentMap<DestinationComponent>.TryAddOrSet(world, entity, this);
+    void IComponent.Register(in int world, in int entity) => ECS.Core.ComponentMap<DestinationComponent>.TryAddOrSet(world, entity, this);
 }
 
 [System.Serializable]
@@ -81,7 +81,7 @@ public struct MoveComponent : IComponent
     public Vector3 Position;
     public Vector3 Orientation;
 
-    void IComponent.Register(int world, int entity) => ECS.Core.ComponentMap<MoveComponent>.TryAddOrSet(world, entity, this);
+    void IComponent.Register(in int world, in int entity) => ECS.Core.ComponentMap<MoveComponent>.TryAddOrSet(world, entity, this);
 }
 
 public enum AgentTeam
