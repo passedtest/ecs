@@ -7,7 +7,7 @@ using UnityEngine;
 namespace ECS
 {
     [Serializable]
-    public struct WorldSnapshot
+    public class WorldSnapshot
     {
         [SerializeField]
         int uid;

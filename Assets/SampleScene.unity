@@ -309,7 +309,7 @@ GameObject:
   - component: {fileID: 1802478996}
   m_Layer: 0
   m_Name: DemoManager
-  m_TagString: GameController
+  m_TagString: Respawn
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -348,7 +348,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1802478993}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.64, y: 0, z: 0}
+  m_LocalPosition: {x: -4.39, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -369,37 +369,18 @@ MonoBehaviour:
   m_Components:
   - id: 0
   - id: 1
-  - id: 2
-  - id: 3
-  - id: 4
   references:
     version: 1
     00000000:
       type: {class: TransformComponent, ns: ECS, asm: Assembly-CSharp}
       data:
-        Position: {x: 1.39, y: 0, z: 0}
+        Position: {x: -4.39, y: 0, z: 0}
         Rotation: {x: 0, y: 0, z: 0, w: 1}
         Scale: {x: 1, y: 1, z: 1}
     00000001:
       type: {class: GameObjectProxyComponenet, ns: ECS, asm: Assembly-CSharp}
       data:
         Name: DemoManager
-        Tag: GameController
+        Tag: Respawn
         Layer: 0
         IsActive: 1
-    00000002:
-      type: {class: BehaviourComponent, ns: , asm: Assembly-CSharp}
-      data:
-        Team: 0
-        Speed: 0
-        DestinationChangePeriod: 0
-    00000003:
-      type: {class: DestinationComponent, ns: , asm: Assembly-CSharp}
-      data:
-        Destination: {x: 0, y: 0, z: 0}
-        NextDestinationUpdateTime: 0
-    00000004:
-      type: {class: MoveComponent, ns: , asm: Assembly-CSharp}
-      data:
-        Position: {x: 0, y: 0, z: 0}
-        Orientation: {x: 0, y: 0, z: 0}

@@ -4,35 +4,28 @@ namespace ECS
 {
     public abstract class BaseSystem : Core.ISystem
     {
-        static List<int> s_EntityIterationBuffer;
+        public Core.ICommandBufferOperator BeforeUpdateCommandBuffer => m_BeforeUpdateCommandBuffer;
+        readonly Core.CommandBuffer m_BeforeUpdateCommandBuffer;
 
-        public Core.ICommandBufferOperator UpdateCommandBuffer => m_UpdateCommandBuffer;
-        readonly Core.CommandBuffer m_UpdateCommandBuffer;
+        public Core.ICommandBufferOperator AfterUpdateCommandBuffer => m_AfterUpdateCommandBuffer;
+        readonly Core.CommandBuffer m_AfterUpdateCommandBuffer;
 
         public Core.ICommandBufferOperator FixedUpdateCommandBuffer => m_FixedUpdateCommandBuffer;
         readonly Core.CommandBuffer m_FixedUpdateCommandBuffer;
 
         protected BaseSystem()
         {
-            m_UpdateCommandBuffer = new Core.CommandBuffer();
+            m_BeforeUpdateCommandBuffer = new Core.CommandBuffer();
+            m_AfterUpdateCommandBuffer = new Core.CommandBuffer();
+
             m_FixedUpdateCommandBuffer = new Core.CommandBuffer();
-        }
-
-        protected IReadOnlyList<int> GetEntitySafeBuffer(in ECSWorld world)
-        {
-            if(s_EntityIterationBuffer == null)
-                s_EntityIterationBuffer = new List<int>(1000);
-
-            s_EntityIterationBuffer.Clear();
-            s_EntityIterationBuffer.AddRange(world.Entities);
-
-            return s_EntityIterationBuffer;
         }
 
         void Core.ISystem.ExecuteUpdate(in ECSWorld world, in float deltaTime)
         {
-            m_UpdateCommandBuffer.Execute();
+            m_BeforeUpdateCommandBuffer.Execute();
             OnExecuteUpdate(world, deltaTime);
+            m_AfterUpdateCommandBuffer.Execute();
         }
 
         void Core.ISystem.ExecuteFixedUpdate(in ECSWorld world, in float deltaTime)

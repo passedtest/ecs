@@ -22,7 +22,7 @@ public sealed class VIewInstanceSystem : ExtendedSystem
         base.OnExecuteUpdate(world, deltaTime);
 
         var behaviourComponents = world.GetComponentsWithEntityReadOnly<BehaviourComponent>();
-        var viewComponents = world.GetOpenedComponentsWithEntity<ViewComponent>();
+        var viewComponents = world.GetComponentsWithEntityReadOnly<ViewComponent>();
 
         foreach (var targetEntity in m_EntityQuery.ForWorld(world.UID))
         {
@@ -39,7 +39,7 @@ public sealed class VIewInstanceSystem : ExtendedSystem
             if (!viewComponent.IsReferenceIdValid)
                 continue;
 
-            viewComponents.TryAddOrSetUnsafe(targetEntity, viewComponent);
+            AfterUpdateCommandBuffer.TryAddOrSetComponent(world.UID, targetEntity, viewComponent);
         }
     }
 

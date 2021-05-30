@@ -90,16 +90,7 @@ public class ProxyComponentEditor : Editor
 
                                     EditorGUILayout.BeginHorizontal();
                                     {
-                                        if (prop.propertyType != SerializedPropertyType.Quaternion)
-                                            EditorGUILayout.PropertyField(prop, true);
-                                        else
-                                        {
-                                            EditorGUI.BeginChangeCheck();
-                                            var eurelAngels = EditorGUILayout.Vector3Field(prop.displayName, prop.quaternionValue.eulerAngles);
-                                            if (EditorGUI.EndChangeCheck())
-                                                prop.quaternionValue = Quaternion.Euler(eurelAngels);
-
-                                        }
+                                        EditorGUILayout.PropertyField(prop, true);
                                     }
                                     EditorGUILayout.EndHorizontal();
                                 }

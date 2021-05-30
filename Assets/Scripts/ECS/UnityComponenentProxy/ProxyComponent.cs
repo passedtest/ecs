@@ -43,7 +43,9 @@ namespace ECS.UnityProxy
         }
 
         public EntityLazyBuilder ToBuilder(ECSWorld world) =>
-            EntityLazyBuilder.New(world).AddComponents(m_Components);
+            EntityLazyBuilder
+                .New(world)
+                .AddComponents(m_Components);
 
         public IReadOnlyList<IComponent> Components => m_Components;
 

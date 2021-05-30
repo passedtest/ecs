@@ -20,14 +20,20 @@ namespace ECS.Core
         }
 
         public void TryAddOrSetComponent<TComponenent>(in int world, in int entity, in TComponenent component) where TComponenent : struct, IComponent =>
-            m_Commands.Enqueue(new AddComponentCommand<TComponenent>(world, entity, component));
+            ScheduleCommand(new AddComponentCommand<TComponenent>(world, entity, component));
+
+        public void TryAddOrSetComponent(in int world, in int entity, in IComponent component) =>
+            ScheduleCommand(new AddComponentCommand(world, entity, component));
 
         public void TryRemoveComponent<TComponenent>(in int world, in int entity) where TComponenent : struct, IComponent =>
-            m_Commands.Enqueue(new RemoveComponentCommand<TComponenent>(world, entity));
+            ScheduleCommand(new RemoveComponentCommand<TComponenent>(world, entity));
 
         public void TryRemoveEntity(in int world, in int entity) =>
-            m_Commands.Enqueue(new RemoveEntityCommand(world, entity));
+            ScheduleCommand(new RemoveEntityCommand(world, entity));
+
         public void ClearForWorld(in int world) =>
-            m_Commands.Enqueue(new RemoveWorldEntitiesCommand(world));
+            ScheduleCommand(new RemoveWorldEntitiesCommand(world));
+
+        public void ScheduleCommand(ICommand command) => m_Commands.Enqueue(command);
     }
 }

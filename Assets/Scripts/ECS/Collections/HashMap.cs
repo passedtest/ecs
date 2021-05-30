@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ECS
+namespace ECS.Collections
 {
 	public class HashMap<T> where T : struct
 	{

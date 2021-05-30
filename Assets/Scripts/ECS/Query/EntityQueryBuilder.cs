@@ -4,8 +4,6 @@ namespace ECS
 {
     public class EntityQueryBuilder : IQueryBuilder
     {
-        public static IQueryBuilder Default { get; private set; } = new EntityQueryBuilder();
-
         readonly EntityQueryBuilderGroup m_IncludedAny;
         readonly EntityQueryBuilderGroup m_IncludedAll;
         readonly EntityQueryBuilderGroup m_Excluded;

@@ -88,5 +88,3 @@ public enum AgentTeam
 {
     Red, Green, Blue,
 }
-
-

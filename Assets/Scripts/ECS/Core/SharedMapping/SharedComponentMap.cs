@@ -129,6 +129,14 @@ namespace ECS.Core
         public static IComponent ProduseComponennt<TComponent>() where TComponent : struct, IComponent =>
             Activator.CreateInstance<TComponent>();
 
+        public static IComponent ProduseComponennt(in int typeHash)
+        {
+            if (!ComponentTypeUtility.TryGetType(typeHash, out var type))
+                throw new InvalidOperationException($"'{typeHash}' is not a valid component type");
+
+            return ProduseComponennt(type);
+        }
+
         public static IComponent ProduseComponennt(in Type type)
         {
             if (!type.IsComponenentType())

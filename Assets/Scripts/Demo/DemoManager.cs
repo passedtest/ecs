@@ -85,7 +85,7 @@ public class DemoManager : MonoBehaviour
             Position = Random.insideUnitSphere * 30f
         };
 
-        builder.Build();
+        builder.BuildNow();
     }
 
     void Update()
@@ -168,7 +168,7 @@ public class DemoManager : MonoBehaviour
 
             if (m_Snapshot != null)
                 if (GUILayout.Button($"Load Snapshot"))
-                    m_World.UpdateForm(m_Snapshot);
+                    m_World.UpdateFrom(m_Snapshot);
 
             GUILayout.EndHorizontal();
 

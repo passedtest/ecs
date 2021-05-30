@@ -1,4 +1,5 @@
-﻿using ECS.Core;
+﻿using ECS.Collections;
+using ECS.Core;
 using System;
 using System.Collections.Generic;
 
@@ -30,14 +31,14 @@ namespace ECS
     /// <summary>
     /// Allocates new entity;
     /// </summary>
-    public struct EntityLazyBuilder
+    public struct EntityLazyBuilder : IDisposable
     {
         readonly int m_WorldUID;
         readonly int m_EntityUID;
 
-        readonly List<IComponent> m_Components;
+        PooledList<IComponent> m_Components;
 
-        bool m_IsValid;
+        bool IsValid => m_Components != null;
 
         EntityLazyBuilder(ECSWorld world)
         {
@@ -46,14 +47,12 @@ namespace ECS
 
             m_WorldUID = world.UID;
             m_EntityUID = world.AllocateEntityUID;
-            m_Components = new List<IComponent>();
-
-            m_IsValid = true;
+            m_Components = PooledList<IComponent>.Provide();
         }
 
         public EntityLazyBuilder AddComponents(IEnumerable<IComponent> componenetns)
         {
-            if (!m_IsValid)
+            if (!IsValid)
                 throw new InvalidOperationException($"Entity '{m_EntityUID}' for world '{m_WorldUID}' is invalid");
 
             m_Components.AddRange(componenetns);
@@ -62,16 +61,16 @@ namespace ECS
 
         public EntityLazyBuilder AddComponent(IComponent component)
         {
-            if (!m_IsValid)
+            if (!IsValid)
                 throw new InvalidOperationException($"Entity '{m_EntityUID}' for world '{m_WorldUID}' is invalid");
 
             m_Components.Add(component);
             return this;
         }
 
-        public void Build()
+        public void BuildNow()
         {
-            if (!m_IsValid)
+            if (!IsValid)
                 throw new InvalidOperationException($"Entity '{m_EntityUID}' for world '{m_WorldUID}' is invalid");
 
             if (m_Components.Count == 0)
@@ -80,15 +79,31 @@ namespace ECS
             foreach (var c in m_Components)
                 c.Register(m_WorldUID, m_EntityUID);
 
-            m_Components.Clear();
-            m_IsValid = false;
+            Dispose();
+        }
+
+        public void BuildViaCommandBuffer(in int world, in int entity, ICommandBufferConcatenator buffer)
+        {
+            if (!IsValid)
+                throw new InvalidOperationException($"Entity '{m_EntityUID}' for world '{m_WorldUID}' is invalid");
+
+            foreach (var component in m_Components)
+                buffer.TryAddOrSetComponent(world, entity, component);
+
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            m_Components.Free();
+            m_Components = null;
         }
 
         public static EntityLazyBuilder New(ECSWorld world) => new EntityLazyBuilder(world);
 
         public static EntityLazyBuilder operator +(EntityLazyBuilder builder, IComponent component)
         {
-            if (!builder.m_IsValid)
+            if (!builder.IsValid)
                 throw new InvalidOperationException($"Invalid builder");
 
             return builder.AddComponent(component);

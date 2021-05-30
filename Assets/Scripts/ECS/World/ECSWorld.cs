@@ -22,9 +22,6 @@ namespace ECS
         ECSWorld(int id)
         {
             UID = id;
-
-            //Root = new GameObject($"World {UID}");
-           // UnityEngine.Object.DontDestroyOnLoad(Root);
         }
 
         public ECSWorld() : this(++LastWorldUID) { }
@@ -40,7 +37,7 @@ namespace ECS
                         .Register(snapshot.ID, componentCollection.Entity);
         }
 
-        public void UpdateForm(ComponentMapSnapshot snapshot)
+        public void UpdateFrom(ComponentMapSnapshot snapshot)
         {
             SharedComponentMap.RestoreFromSnapshot(snapshot);
         }

@@ -15,19 +15,16 @@ namespace ECS.UnityProxy
 
             foreach (var type in Core.ComponentTypeUtility.GetComponenentTypes())
             {
-                var attibutes = type.GetCustomAttributes(typeof(ProxyComponentAttribute), false);
                 var typeHashCode = Core.ComponentTypeUtility.HashCodeOf(type);
-                if (attibutes.Length > 0)
-                {
-                    foreach (ProxyComponentAttribute attribute in attibutes)
-                    {
-                        if (attribute.State == ProxyComponenentStateOverride.Exclude)
-                            continue;
 
-                        s_AllProxyComponenents.Add(typeHashCode);
-                        if (attribute.State == ProxyComponenentStateOverride.Persistent)
-                            s_PersistentComponenentTypes.Add(typeHashCode);
-                    }
+                if (Attribute.GetCustomAttribute(type, typeof(ProxyComponentAttribute)) is ProxyComponentAttribute attribute)
+                {
+                    if (attribute.State == ProxyComponenentStateOverride.Exclude)
+                        continue;
+
+                    s_AllProxyComponenents.Add(typeHashCode);
+                    if (attribute.State == ProxyComponenentStateOverride.Persistent)
+                        s_PersistentComponenentTypes.Add(typeHashCode);
                 }
                 else
                     s_AllProxyComponenents.Add(typeHashCode);
