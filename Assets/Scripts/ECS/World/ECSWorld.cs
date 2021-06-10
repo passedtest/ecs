@@ -1,7 +1,5 @@
 ﻿using ECS.Core;
-using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace ECS
 {
@@ -11,6 +9,7 @@ namespace ECS
 
         int m_LastEntityUID;
         public int AllocateEntityUID => ++m_LastEntityUID;
+        public int NexteEntityUID => m_LastEntityUID + 1;
 
         public int UID { get; private set; }
         public bool IsValid => UID > 0;
@@ -19,14 +18,18 @@ namespace ECS
         public IEnumerable<int> Entities => EntityComponetPairs.Keys;
         public int EntitiesCount => EntityComponetPairs.Count;
 
-        ECSWorld(int id)
+        readonly ISystem m_MasterSystem;
+
+        ECSWorld(int id, ISystem masterSystem)
         {
             UID = id;
+            m_MasterSystem = masterSystem;
         }
 
-        public ECSWorld() : this(++LastWorldUID) { }
+        public ECSWorld(ISystem masterSystem) : this(++LastWorldUID, masterSystem) { }
+        public ECSWorld(params ISystem[] systems) : this(new MasterSystem(systems)) { }
 
-        public ECSWorld(WorldSnapshot snapshot) : this(snapshot.ID)
+        public ECSWorld(WorldSnapshot snapshot, ISystem masterSystem) : this(snapshot.ID, masterSystem)
         {
             UID = snapshot.ID;
 
@@ -37,10 +40,17 @@ namespace ECS
                         .Register(snapshot.ID, componentCollection.Entity);
         }
 
-        public void UpdateFrom(ComponentMapSnapshot snapshot)
-        {
+        public void ExecuteUpdate(float deltaTime) =>
+            m_MasterSystem.ExecuteUpdate(this, deltaTime);
+
+        public void ExecuteFixedUpdate(float deltaTime) =>
+            m_MasterSystem.ExecuteFixedUpdate(this, deltaTime);
+
+        public void ExecuteGizmoUpdate(float deltaTime) =>
+            m_MasterSystem.ExecuteGizmoUpdate(this, deltaTime);
+
+        public void UpdateFrom(ComponentMapSnapshot snapshot) =>
             SharedComponentMap.RestoreFromSnapshot(snapshot);
-        }
 
         public void Destroy()
         {

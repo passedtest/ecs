@@ -25,7 +25,6 @@ public struct EntitySetup
 public class DemoManager : MonoBehaviour
 {
     ECSWorld m_World;
-    ECS.Core.ISystem m_MasterSystem;
 
     [SerializeField]
     EntitySetup[] m_BoidSettings;
@@ -35,22 +34,36 @@ public class DemoManager : MonoBehaviour
 
     void Start()
     {
-        m_MasterSystem = new MasterSystem(
-            new WorldTimeSystem(),
-            new MovementSystem(), 
-            new VIewInstanceSystem(m_BoidSettings),
-            new VIewMovementSystem());
-
         BuildWorld(400);
     }
+
+    ECS.Core.ISystem PrduseMasterSystem() => new MasterSystem(
+            new WorldTimeSystem(),
+            new MovementSystem(),
+            new VIewInstanceSystem(m_BoidSettings),
+            new VIewMovementSystem());
 
     void BuildWorld(int entityCount)
     {
         DestroyCurrentWorld();
 
-        m_World = new ECSWorld();
+        m_World = new ECSWorld(PrduseMasterSystem());
+
         for (var i = 0; i < entityCount; i++)
             BuildBoidEnitity(m_World);
+
+        var builder = EntityLazyBuilder.New(m_World);
+
+        builder += new TransformComponent();
+        builder += new ECS.Experimental.ComponentWithCollectionPtr()
+        {
+            IntCollection = ECS
+                .Experimental
+                .Collections
+                .CollectionPtr<int>.New(Allocate<int>(10, m_World))
+        };
+
+        builder.BuildNow();
     }
 
     void DestroyCurrentWorld()
@@ -59,6 +72,19 @@ public class DemoManager : MonoBehaviour
             m_World.Destroy();
 
         m_World = null;
+    }
+
+    ECS.Experimental.Collections.EntityRangePtr Allocate<TElement>(in int length, in ECSWorld world) where TElement : struct
+    {
+        var entityRangePtp = new ECS.Experimental.Collections.EntityRangePtr(world.UID, world.NexteEntityUID, length);
+
+        for (var i = 0; i < length; i++)
+            ECS.Core
+                .ComponentMap<ECS.Experimental.Collections.CollectionElementComponent<TElement>>
+                .TryAdd(world.UID, world.AllocateEntityUID, new ECS.Experimental.Collections.CollectionElementComponent<TElement>());
+
+
+        return entityRangePtp;
     }
 
     void BuildBoidEnitity(ECSWorld world)
@@ -91,19 +117,19 @@ public class DemoManager : MonoBehaviour
     void Update()
     {
         if (m_World != null)
-            m_MasterSystem.ExecuteUpdate(m_World, Time.deltaTime);
+            m_World.ExecuteUpdate(Time.deltaTime);
     }
 
     void FixedUpdate()
     {
         if (m_World != null)
-            m_MasterSystem.ExecuteFixedUpdate(m_World, Time.fixedDeltaTime);
+            m_World.ExecuteFixedUpdate(Time.fixedDeltaTime);
     }
 
     void OnDrawGizmos()
     {
         if (m_World != null)
-            m_MasterSystem.ExecuteGizmoUpdate(m_World, Time.deltaTime);
+            m_World.ExecuteGizmoUpdate(Time.deltaTime);
     }
 
     bool m_Saving;
@@ -135,7 +161,7 @@ public class DemoManager : MonoBehaviour
                     if (!string.IsNullOrWhiteSpace(json))
                     {
                         DestroyCurrentWorld();
-                        m_World = new ECSWorld(JsonUtility.FromJson<WorldSnapshot>(json));
+                        m_World = new ECSWorld(JsonUtility.FromJson<WorldSnapshot>(json), PrduseMasterSystem());
                     }
                     else
                         Debug.LogError("Nothing to load");
@@ -186,9 +212,13 @@ public class DemoManager : MonoBehaviour
             GUILayout.Label($"Entities: {m_World.EntitiesCount}");
 
             DrawComponenetCount<WorldTimeComponent>(m_World);
+            DrawComponenetCount<WorldFixedTimeComponent>(m_World);
             DrawComponenetCount<BehaviourComponent>(m_World);
             DrawComponenetCount<MoveComponent>(m_World);
             DrawComponenetCount<ViewComponent>(m_World);
+
+            DrawComponenetCount<ECS.Experimental.Collections.CollectionElementComponent<int>>(m_World);
+            DrawComponenetCount<ECS.Experimental.ComponentWithCollectionPtr>(m_World);
 
             //foreach (var c in ECS.Core.SharedComponentMap.ComponentsForWorld(m_World.UID))
             //    GUILayout.Label($"{c.Key} : {c.Value.GetType().FullName}");
@@ -201,7 +231,7 @@ public class DemoManager : MonoBehaviour
     {
         var components = world.GetComponentsWithEntityReadOnly<TComponent>();
         if (components != null)
-            GUILayout.Label($"{typeof(TComponent).Name}: {components.Count}");
+            GUILayout.Label($"{typeof(TComponent).Name}: {components.Count} hc: {ECS.Core.ComponentTypeUtility.HashCodeOf(typeof(TComponent))}");
     }
 }
 

@@ -37,14 +37,15 @@ namespace ECS.Core
 
         public static int HashCodeOf(in Type type)
         {
+            if (!type.IsComponenentType())
+                throw new InvalidOperationException($"{type.FullName} doesn't implements {s_ComponenentInterfaceType.FullName}");
+
             var currentCode = type.GetHashCode();
             if (!s_HashCodeLookup.TryGetValue(currentCode, out var actualHashCode))
-            {
-                if (!type.IsComponenentType())
-                    throw new InvalidOperationException($"{type.FullName} doesn't implements {s_ComponenentInterfaceType.FullName}");
-
                 s_HashCodeLookup.Add(currentCode, actualHashCode = ProduseHashCode(type));
-            }
+
+            if (!s_TypeLookup.ContainsKey(actualHashCode))
+                s_TypeLookup.Add(actualHashCode, type);
 
             return actualHashCode;
         }
@@ -57,14 +58,10 @@ namespace ECS.Core
 
         static void RebuildTypeLookups()
         {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) 
-                foreach(var type in assembly.GetTypes())
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+                foreach (var type in assembly.GetTypes())
                     if (type.IsComponenentType())
-                    {
-                        var produsedHashCode = ProduseHashCode(type);
-                        s_HashCodeLookup.Add(type.GetHashCode(), produsedHashCode);
-                        s_TypeLookup.Add(produsedHashCode, type);
-                    }
+                        HashCodeOf(type);
         }
 
         public static bool IsComponenentType(this Type type) =>
