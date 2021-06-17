@@ -56,7 +56,7 @@ public class DemoManager : MonoBehaviour
         var builder = EntityLazyBuilder.New(m_World);
 
         builder += new TransformComponent();
-        builder += new ECS.Experimental.ComponentWithCollectionPtr()
+        builder += new ECS.Experimental.ComponentWithReferences()
         {
             IntCollection = m_World.AllocateCollection<int>(10)
         };

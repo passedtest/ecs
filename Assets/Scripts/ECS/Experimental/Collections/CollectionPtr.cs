@@ -60,6 +60,15 @@ namespace ECS.Experimental.Collections
             }
         }
 
+        public TElement[] ToArray()
+        {
+            var result = new TElement[Length];
+            for (var i = 0; i < result.Length; i++)
+                result[i] = Get(i);
+
+            return result;
+        }
+
         public static implicit operator EntityRangePtr(CollectionPtr<TElement> collection) => 
             collection.m_Elements;
 

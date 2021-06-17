@@ -1,4 +1,5 @@
-﻿using ECS.Experimental.Collections;
+﻿using ECS.Core.Ptr;
+using ECS.Experimental.Collections;
 
 namespace ECS.Experimental
 {
@@ -6,7 +7,7 @@ namespace ECS.Experimental
     /// Demo component that shows, how collection storage may be implemented;
     /// </summary>
     [System.Serializable, UnityProxy.ProxyComponent(UnityProxy.ProxyComponenentStateOverride.Exclude), RequireCollectionOfType(typeof(int))]
-    public struct ComponentWithCollectionPtr : IComponent
+    public struct ComponentWithReferences : IComponent
     {
         public CollectionPtr<int> IntCollection
         {
@@ -18,6 +19,16 @@ namespace ECS.Experimental
         [UnityEngine.SerializeField]
         EntityRangePtr m_IntCollectionPtr;
 
-        void IComponent.Register(in int world, in int entity) => Core.ComponentMap<ComponentWithCollectionPtr>.TryAddOrSet(world, entity, this);
+        public ComponentPtr<TransformComponent> TransformComponent
+        {
+            get => ComponentPtr<TransformComponent>.New(m_TransformEntityPtr);
+            set => m_TransformEntityPtr = value;
+        }
+
+        //Entity pointer, can be serialized;
+        [UnityEngine.SerializeField]
+        EntityPtr m_TransformEntityPtr;
+
+        void IComponent.Register(in int world, in int entity) => Core.ComponentMap<ComponentWithReferences>.TryAddOrSet(world, entity, this);
     }
 }

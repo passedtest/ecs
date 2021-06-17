@@ -88,7 +88,7 @@ namespace ECS.Core
         }
 
         public static bool IsComponenentType(this Type type) =>
-            s_ComponenentInterfaceType.IsAssignableFrom(type) && !type.Equals(s_ComponenentInterfaceType);
+            type.IsValueType && s_ComponenentInterfaceType.IsAssignableFrom(type) && !type.Equals(s_ComponenentInterfaceType);
 
         public static IReadOnlyCollection<Type> GetComponenentTypes() => s_TypeLookup.Values;
     }

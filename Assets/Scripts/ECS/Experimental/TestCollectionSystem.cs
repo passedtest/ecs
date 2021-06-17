@@ -6,7 +6,7 @@
         {
             base.OnExecuteUpdate(world, deltaTime);
 
-            var collectionComponenents = world.GetComponentsWithEntityReadOnly<ComponentWithCollectionPtr>();
+            var collectionComponenents = world.GetComponentsWithEntityReadOnly<ComponentWithReferences>();
 
             foreach (var targetEntity in world.Entities)
             {
