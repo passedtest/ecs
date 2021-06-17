@@ -20,7 +20,7 @@ public class ProxyComponentEditor : Editor
         m_ComponenentTypes = new Dictionary<string, Type>();
         foreach (var typeHashCode in ProxyComponentUtility.GetComponenentTypeHashCodes())
         {
-            if(ECS.Core.ComponentTypeUtility.TryGetType(typeHashCode, out var type))
+            if (ECS.Core.ComponentTypeUtility.TryGetType(typeHashCode, out var type))
                 m_ComponenentTypes.Add(type.Name, type);
         }
     }
@@ -30,6 +30,9 @@ public class ProxyComponentEditor : Editor
         var proxyCompopnenent = target as ProxyComponent;
         if (proxyCompopnenent == null)
             return;
+
+        if (GUILayout.Button($"Convert via '{typeof(IProxyComponenentConverter).Name}'"))
+            proxyCompopnenent.ConvertCurrentGameObject();
 
         if (GUILayout.Button("Add componenent"))
         {

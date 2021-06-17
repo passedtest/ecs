@@ -33,4 +33,19 @@
             return component;
         }
     }
+
+    [System.AttributeUsage(System.AttributeTargets.Struct, AllowMultiple = false)]
+    public class RequireCollectionOfTypeAttribute : Core.RequireGenericComponenentTypeAttribute
+    {
+        public RequireCollectionOfTypeAttribute(params System.Type[] collectionTypes) : base(ToCollectionComponentTypes(collectionTypes)) { }
+
+        static System.Type[] ToCollectionComponentTypes(System.Type[] collectionTypes)
+        {
+            var result = new System.Type[collectionTypes.Length];
+            for(var i = 0; i < result.Length; i++)
+                result[i] = typeof(CollectionElementComponent<>).MakeGenericType(collectionTypes[i]);
+
+            return result;
+        }
+    }
 }

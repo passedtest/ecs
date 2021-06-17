@@ -134,10 +134,10 @@ namespace ECS.Core
             if (!ComponentTypeUtility.TryGetType(typeHash, out var type))
                 throw new InvalidOperationException($"'{typeHash}' is not a valid component type");
 
-            return ProduseComponennt(type);
+            return ProduseComponent(type);
         }
 
-        public static IComponent ProduseComponennt(in Type type)
+        public static IComponent ProduseComponent(in Type type)
         {
             if (!type.IsComponenentType())
                 throw new InvalidOperationException($"'{type.FullName}' is not a componenent type");

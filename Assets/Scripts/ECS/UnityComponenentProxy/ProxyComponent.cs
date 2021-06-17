@@ -20,7 +20,7 @@ namespace ECS.UnityProxy
                 if (!CanAddComponent(componenentType))
                     continue;
 
-                m_Components.Insert(0, Core.SharedComponentMap.ProduseComponennt(componenentType));
+                m_Components.Insert(0, Core.SharedComponentMap.ProduseComponent(componenentType));
             }
         }
 
@@ -28,7 +28,7 @@ namespace ECS.UnityProxy
         {
             var canAddComponentnt = CanAddComponent(componenentType);
             if(canAddComponentnt)
-                m_Components.Add(Core.SharedComponentMap.ProduseComponennt(componenentType));
+                m_Components.Add(Core.SharedComponentMap.ProduseComponent(componenentType));
 
             return canAddComponentnt;
         }
@@ -40,6 +40,16 @@ namespace ECS.UnityProxy
                     return false;
 
             return true;
+        }
+
+        public bool TryAddComponenent(IComponent componenent)
+        {
+            var componenentType = componenent.GetType();
+            var canAddComponentnt = CanAddComponent(componenentType);
+            if (canAddComponentnt)
+                m_Components.Add(componenent);
+
+            return canAddComponentnt;
         }
 
         public EntityLazyBuilder ToBuilder(ECSWorld world) =>
@@ -54,6 +64,13 @@ namespace ECS.UnityProxy
             for(var i = 0; i < m_Components.Count; i++)
                 if (m_Components[i] is TransformComponent)
                     m_Components[i] = newTransformComponent;
+        }
+
+        public void ConvertCurrentGameObject()
+        {
+            var components = GetComponents<IProxyComponenentConverter>();
+            foreach (var component in components)
+                TryAddComponenent(component.Convert());
         }
     }    
 }

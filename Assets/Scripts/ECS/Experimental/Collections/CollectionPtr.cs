@@ -43,7 +43,7 @@ namespace ECS.Experimental.Collections
 
         int ValidateIndexRange(int index)
         {
-            var targetIndex = index - m_Elements.Start;
+            var targetIndex = m_Elements.Start + index;
             if (targetIndex < 0 || targetIndex >= Length)
                 throw new System.IndexOutOfRangeException();
 
@@ -60,7 +60,7 @@ namespace ECS.Experimental.Collections
             }
         }
 
-        public static implicit operator EntityRangePtr (CollectionPtr<TElement> collection) => 
+        public static implicit operator EntityRangePtr(CollectionPtr<TElement> collection) => 
             collection.m_Elements;
 
         public static CollectionPtr<TElement> New(EntityRangePtr entityRange) => 

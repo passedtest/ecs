@@ -41,7 +41,8 @@ public class DemoManager : MonoBehaviour
             new WorldTimeSystem(),
             new MovementSystem(),
             new VIewInstanceSystem(m_BoidSettings),
-            new VIewMovementSystem());
+            new VIewMovementSystem(),
+            new ECS.Experimental.TestCollectionSystem());
 
     void BuildWorld(int entityCount)
     {
@@ -49,18 +50,15 @@ public class DemoManager : MonoBehaviour
 
         m_World = new ECSWorld(PrduseMasterSystem());
 
-        for (var i = 0; i < entityCount; i++)
-            BuildBoidEnitity(m_World);
+        //for (var i = 0; i < entityCount; i++)
+        //    BuildBoidEnitity(m_World);
 
         var builder = EntityLazyBuilder.New(m_World);
 
         builder += new TransformComponent();
         builder += new ECS.Experimental.ComponentWithCollectionPtr()
         {
-            IntCollection = ECS
-                .Experimental
-                .Collections
-                .CollectionPtr<int>.New(Allocate<int>(10, m_World))
+            IntCollection = m_World.AllocateCollection<int>(10)
         };
 
         builder.BuildNow();
@@ -74,18 +72,6 @@ public class DemoManager : MonoBehaviour
         m_World = null;
     }
 
-    ECS.Experimental.Collections.EntityRangePtr Allocate<TElement>(in int length, in ECSWorld world) where TElement : struct
-    {
-        var entityRangePtp = new ECS.Experimental.Collections.EntityRangePtr(world.UID, world.NexteEntityUID, length);
-
-        for (var i = 0; i < length; i++)
-            ECS.Core
-                .ComponentMap<ECS.Experimental.Collections.CollectionElementComponent<TElement>>
-                .TryAdd(world.UID, world.AllocateEntityUID, new ECS.Experimental.Collections.CollectionElementComponent<TElement>());
-
-
-        return entityRangePtp;
-    }
 
     void BuildBoidEnitity(ECSWorld world)
     {
@@ -198,6 +184,8 @@ public class DemoManager : MonoBehaviour
 
             GUILayout.EndHorizontal();
 
+            GUILayout.Label($"Next entity: {m_World.EntityAllocator.NextEntityUID}");
+
             if (m_Snapshot != null)
                 GUILayout.Label($"Snapshot Count: {m_Snapshot.Count}");
 
@@ -211,17 +199,20 @@ public class DemoManager : MonoBehaviour
 
             GUILayout.Label($"Entities: {m_World.EntitiesCount}");
 
-            DrawComponenetCount<WorldTimeComponent>(m_World);
-            DrawComponenetCount<WorldFixedTimeComponent>(m_World);
-            DrawComponenetCount<BehaviourComponent>(m_World);
-            DrawComponenetCount<MoveComponent>(m_World);
-            DrawComponenetCount<ViewComponent>(m_World);
+            //DrawComponenetCount<WorldTimeComponent>(m_World);
+            //DrawComponenetCount<WorldFixedTimeComponent>(m_World);
+            //DrawComponenetCount<BehaviourComponent>(m_World);
+            //DrawComponenetCount<MoveComponent>(m_World);
+            //DrawComponenetCount<ViewComponent>(m_World);
 
-            DrawComponenetCount<ECS.Experimental.Collections.CollectionElementComponent<int>>(m_World);
-            DrawComponenetCount<ECS.Experimental.ComponentWithCollectionPtr>(m_World);
+            //DrawComponenetCount<ECS.Experimental.Collections.CollectionElementComponent<int>>(m_World);
+            //DrawComponenetCount<ECS.Experimental.ComponentWithCollectionPtr>(m_World);
 
             //foreach (var c in ECS.Core.SharedComponentMap.ComponentsForWorld(m_World.UID))
             //    GUILayout.Label($"{c.Key} : {c.Value.GetType().FullName}");
+
+            foreach (var kvp in ECS.Core.ComponentTypeUtility.Types)
+                GUILayout.Label($"{kvp.Key} : {kvp.Value.FullName}");
 
         }
         GUILayout.EndVertical();

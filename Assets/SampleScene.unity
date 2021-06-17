@@ -347,13 +347,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1802478993}
-  m_LocalRotation: {x: 0.055368118, y: 0.025265766, z: -0.0014015173, w: 0.99814534}
-  m_LocalPosition: {x: 1.27, y: 0, z: 0}
+  m_LocalRotation: {x: -0.02669175, y: 0.025295585, z: 0.0006756406, w: 0.99932337}
+  m_LocalPosition: {x: 69.55, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 2
-  m_LocalEulerAnglesHint: {x: 6.35, y: 2.9, z: 0}
+  m_LocalEulerAnglesHint: {x: -3.06, y: 2.9, z: 0}
 --- !u!114 &1802478996
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -369,13 +369,14 @@ MonoBehaviour:
   m_Components:
   - id: 0
   - id: 1
+  - id: 2
   references:
     version: 1
     00000000:
       type: {class: TransformComponent, ns: ECS, asm: Assembly-CSharp}
       data:
-        Position: {x: 1.27, y: 0, z: 0}
-        Rotation: {x: 0.055368118, y: 0.025265766, z: -0.0014015173, w: 0.99814534}
+        Position: {x: 69.55, y: 0, z: 0}
+        Rotation: {x: -0.02669175, y: 0.025295585, z: 0.0006756406, w: 0.99932337}
         Scale: {x: 1, y: 1, z: 1}
     00000001:
       type: {class: GameObjectProxyComponenet, ns: ECS, asm: Assembly-CSharp}
@@ -384,3 +385,8 @@ MonoBehaviour:
         Tag: Respawn
         Layer: 0
         IsActive: 1
+    00000002:
+      type: {class: DestinationComponent, ns: , asm: Assembly-CSharp}
+      data:
+        Destination: {x: 0, y: 0, z: 0}
+        NextDestinationUpdateTime: 0

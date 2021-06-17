@@ -19,7 +19,7 @@ namespace ECS
                 throw new ArgumentNullException(nameof(world));
 
             m_WorldUID = world.UID;
-            m_EntityUID = world.AllocateEntityUID;
+            m_EntityUID = world.EntityAllocator.AllocateUID;
         }
 
         public void AddComponenet<TComponent>(TComponent component) where TComponent : struct, IComponent =>
@@ -46,7 +46,7 @@ namespace ECS
                 throw new ArgumentNullException(nameof(world));
 
             m_WorldUID = world.UID;
-            m_EntityUID = world.AllocateEntityUID;
+            m_EntityUID = world.EntityAllocator.AllocateUID;
             m_Components = PooledList<IComponent>.Provide();
         }
 

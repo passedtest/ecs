@@ -2,7 +2,10 @@
 
 namespace ECS.Experimental
 {
-    [System.Serializable]
+    /// <summary>
+    /// Demo component that shows, how collection storage may be implemented;
+    /// </summary>
+    [System.Serializable, UnityProxy.ProxyComponent(UnityProxy.ProxyComponenentStateOverride.Exclude), RequireCollectionOfType(typeof(int))]
     public struct ComponentWithCollectionPtr : IComponent
     {
         public CollectionPtr<int> IntCollection
@@ -11,7 +14,7 @@ namespace ECS.Experimental
             set => m_IntCollectionPtr = value;
         }
 
-        //Collection pointer;
+        //Collection pointer, can be serialized;
         [UnityEngine.SerializeField]
         EntityRangePtr m_IntCollectionPtr;
 

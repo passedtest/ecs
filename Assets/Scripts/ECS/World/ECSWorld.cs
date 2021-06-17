@@ -7,9 +7,7 @@ namespace ECS
     {
         static int LastWorldUID = 0;
 
-        int m_LastEntityUID;
-        public int AllocateEntityUID => ++m_LastEntityUID;
-        public int NexteEntityUID => m_LastEntityUID + 1;
+        public EntityAllocator EntityAllocator { get; private set; }
 
         public int UID { get; private set; }
         public bool IsValid => UID > 0;
@@ -20,24 +18,24 @@ namespace ECS
 
         readonly ISystem m_MasterSystem;
 
-        ECSWorld(int id, ISystem masterSystem)
+        ECSWorld(int uid, int entityUID, ISystem masterSystem)
         {
-            UID = id;
+            UID = uid;
+            EntityAllocator = new EntityAllocator(entityUID);
             m_MasterSystem = masterSystem;
         }
 
+        ECSWorld(int uid, ISystem masterSystem) : this(uid, 0, masterSystem) { }
+
         public ECSWorld(ISystem masterSystem) : this(++LastWorldUID, masterSystem) { }
         public ECSWorld(params ISystem[] systems) : this(new MasterSystem(systems)) { }
-
-        public ECSWorld(WorldSnapshot snapshot, ISystem masterSystem) : this(snapshot.ID, masterSystem)
+        public ECSWorld(WorldSnapshot snapshot, ISystem masterSystem) : this(snapshot.UID, snapshot.EntityUID, masterSystem)
         {
-            UID = snapshot.ID;
-
             foreach (var componentCollection in snapshot.ComponentsData)
                 foreach (var serializedComponent in componentCollection)
                     serializedComponent
                         .Restore()
-                        .Register(snapshot.ID, componentCollection.Entity);
+                        .Register(snapshot.UID, componentCollection.Entity);
         }
 
         public void ExecuteUpdate(float deltaTime) =>
@@ -63,17 +61,9 @@ namespace ECS
             UID = 0;
         }
 
-        public void DestroyView()
-        {
+        public void DestroyView() =>
             GameObjectByRef.Dispose(UID);
-        }
 
-        public void RegisterComponent<TComponent>(int entity, TComponent component) where TComponent : struct, IComponent =>
-             ComponentMap<TComponent>.TryAdd(UID, entity, component);
-
-        public void RemoveEntity(int entity) =>
-            SharedComponentMap.ClearForEntity(UID, entity);
-       
         public IUnsafeComponentCollection<TComponent> GetOpenedComponentsWithEntity<TComponent>() where TComponent : struct, IComponent =>
             ComponentMap<TComponent>.ForWorldByEntityOpened(UID);
 
@@ -85,5 +75,18 @@ namespace ECS
 
         public WorldSnapshot ToSnapshot() => new WorldSnapshot(this);
         public ComponentMapSnapshot ToComponentMapSnapshot() => SharedComponentMap.BuildSnapshotForWorld(UID);
+
+        public Experimental.Collections.CollectionPtr<TElement> AllocateCollection<TElement>(in int length) where TElement : struct =>
+            AllocateCollectionViaCommandBuffer<TElement>(length, new DirectCommandBufferConcatenator());
+
+        public Experimental.Collections.CollectionPtr<TElement> AllocateCollectionViaCommandBuffer<TElement>(in int length, in ICommandBufferConcatenator commandBuffer) where TElement : struct
+        {
+            var entityRangePtp = new Experimental.Collections.EntityRangePtr(UID, EntityAllocator.NextEntityUID, length);
+
+            for (var i = 0; i < length; i++)
+                commandBuffer.TryAddOrSetComponent(UID, EntityAllocator.AllocateUID, new Experimental.Collections.CollectionElementComponent<TElement>());
+
+            return Experimental.Collections.CollectionPtr<TElement>.New(entityRangePtp);
+        }
     }
 }

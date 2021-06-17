@@ -20,7 +20,7 @@ namespace ECS.Core
         }
 
         public void TryAddOrSetComponent<TComponenent>(in int world, in int entity, in TComponenent component) where TComponenent : struct, IComponent =>
-            ScheduleCommand(new AddComponentCommand<TComponenent>(world, entity, component));
+            ScheduleCommand(new AddComponentCommand(world, entity, component));
 
         public void TryAddOrSetComponent(in int world, in int entity, in IComponent component) =>
             ScheduleCommand(new AddComponentCommand(world, entity, component));

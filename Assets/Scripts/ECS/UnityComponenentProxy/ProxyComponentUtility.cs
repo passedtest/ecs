@@ -15,6 +15,9 @@ namespace ECS.UnityProxy
 
             foreach (var type in Core.ComponentTypeUtility.GetComponenentTypes())
             {
+                if (type.IsGenericType)
+                    continue;
+
                 var typeHashCode = Core.ComponentTypeUtility.HashCodeOf(type);
 
                 if (Attribute.GetCustomAttribute(type, typeof(ProxyComponentAttribute)) is ProxyComponentAttribute attribute)

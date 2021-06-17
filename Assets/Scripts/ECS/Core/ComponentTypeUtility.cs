@@ -22,6 +22,8 @@ namespace ECS.Core
         readonly static Dictionary<int, int> s_HashCodeLookup;
         readonly static Dictionary<int, Type> s_TypeLookup;
 
+        public static IReadOnlyDictionary<int, Type> Types => s_TypeLookup;
+
         static ComponentTypeUtility()
         {
             s_ComponenentInterfaceType = typeof(IComponent);
@@ -61,12 +63,44 @@ namespace ECS.Core
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
                 foreach (var type in assembly.GetTypes())
                     if (type.IsComponenentType())
+                    {
                         HashCodeOf(type);
+
+                        if (Attribute.GetCustomAttribute(type, typeof(RequireGenericComponenentTypeAttribute)) is RequireGenericComponenentTypeAttribute genericComponenentRequireAttribute)
+                        {
+                            foreach (var genericComponenentType in genericComponenentRequireAttribute.Types)
+                            {
+                                if (!genericComponenentType.IsGenericType)
+                                    throw new InvalidOperationException();
+
+                                if (!genericComponenentType.IsComponenentType())
+                                    throw new InvalidOperationException($"{genericComponenentType.FullName} is not a componenent type");
+
+                                var genericArguments = genericComponenentType.GetGenericArguments();
+                                foreach (var genericArgument in genericArguments)
+                                    if (!genericArgument.IsValueType)
+                                        throw new InvalidOperationException();
+
+                                HashCodeOf(genericComponenentType);
+                            }
+                        }
+                    }
         }
 
         public static bool IsComponenentType(this Type type) =>
             s_ComponenentInterfaceType.IsAssignableFrom(type) && !type.Equals(s_ComponenentInterfaceType);
 
         public static IReadOnlyCollection<Type> GetComponenentTypes() => s_TypeLookup.Values;
+    }
+
+    [AttributeUsage(AttributeTargets.Struct, AllowMultiple = false)]
+    public class RequireGenericComponenentTypeAttribute : Attribute
+    {
+        public readonly Type[] Types;
+
+        public RequireGenericComponenentTypeAttribute(params Type[] targetTypes)
+        {
+            Types = targetTypes;
+        }
     }
 }
