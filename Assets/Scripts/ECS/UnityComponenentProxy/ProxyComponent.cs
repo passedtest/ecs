@@ -52,7 +52,7 @@ namespace ECS.UnityProxy
             return canAddComponentnt;
         }
 
-        public EntityLazyBuilder ToBuilder(ECSWorld world) =>
+        public EntityLazyBuilder ToBuilder(in int world) =>
             EntityLazyBuilder
                 .New(world)
                 .AddComponents(m_Components);

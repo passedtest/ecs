@@ -15,7 +15,7 @@ namespace ECS
         public void WithComponenet<TComponent>() where TComponent : struct, IComponent =>
             m_Components.Add(ComponentTypeUtility.HashCodeOf<TComponent>());
 
-        public EntityLazyBuilder ToBuilder(in ECSWorld world)
+        public EntityLazyBuilder ToBuilder(in int world)
         {
             var builder = EntityLazyBuilder.New(world);
             foreach (var componenentTypeHash in m_Components)
@@ -24,7 +24,7 @@ namespace ECS
             return builder;
         }
 
-        public void ProduseEntity(in ECSWorld world) => 
+        public void ProduseEntity(in int world) => 
             ToBuilder(world).BuildNow();
 
         public bool IsEntityMatched(in int world, in int entity) =>

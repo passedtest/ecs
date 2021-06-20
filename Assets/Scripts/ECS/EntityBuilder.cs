@@ -13,19 +13,16 @@ namespace ECS
         readonly int m_WorldUID;
         readonly int m_EntityUID;
 
-        EntityBuilder(ECSWorld world)
+        EntityBuilder(in int world)
         {
-            if (world == null)
-                throw new ArgumentNullException(nameof(world));
-
-            m_WorldUID = world.UID;
-            m_EntityUID = world.EntityAllocator.AllocateUID;
+            m_WorldUID = world;
+            m_EntityUID = EntityAllocatorComponenent.Allocate(m_WorldUID);
         }
 
         public void AddComponenet<TComponent>(TComponent component) where TComponent : struct, IComponent =>
             ComponentMap<TComponent>.TryAdd(m_WorldUID, m_EntityUID, component);
 
-        public static EntityBuilder New(ECSWorld world) => new EntityBuilder(world);
+        public static EntityBuilder New(in int world) => new EntityBuilder(world);
     }
 
     /// <summary>
@@ -40,13 +37,10 @@ namespace ECS
 
         bool IsValid => m_Components != null;
 
-        EntityLazyBuilder(ECSWorld world)
+        EntityLazyBuilder(in int world)
         {
-            if (world == null)
-                throw new ArgumentNullException(nameof(world));
-
-            m_WorldUID = world.UID;
-            m_EntityUID = world.EntityAllocator.AllocateUID;
+            m_WorldUID = world;
+            m_EntityUID = EntityAllocatorComponenent.Allocate(m_WorldUID);
             m_Components = PooledList<IComponent>.Provide();
         }
 
@@ -99,7 +93,7 @@ namespace ECS
             m_Components = null;
         }
 
-        public static EntityLazyBuilder New(ECSWorld world) => new EntityLazyBuilder(world);
+        public static EntityLazyBuilder New(in int world) => new EntityLazyBuilder(world);
 
         public static EntityLazyBuilder operator +(EntityLazyBuilder builder, IComponent component)
         {

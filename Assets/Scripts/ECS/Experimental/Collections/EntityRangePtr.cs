@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace ECS.Experimental.Collections
+namespace ECS.Core.Experimental.Collections
 {
     [System.Serializable]
     public struct EntityRangePtr
@@ -23,5 +23,7 @@ namespace ECS.Experimental.Collections
             m_Start = start;
             m_Length = length;
         }
+
+        public int IndexToEntity(int index) => m_Start + index;
     }
 }

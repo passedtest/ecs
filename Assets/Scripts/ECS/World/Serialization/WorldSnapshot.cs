@@ -14,17 +14,12 @@ namespace ECS
         public int UID => uid;
 
         [SerializeField]
-        int euid;
-        public int EntityUID => euid;
-
-        [SerializeField]
         List<ComponentCollection> cd;
         public List<ComponentCollection> ComponentsData => cd;
 
         public WorldSnapshot(ECSWorld world)
         {
             uid = world.UID;
-            euid = world.EntityAllocator.CurrentUID;
 
             cd = new List<ComponentCollection>();
 

@@ -42,7 +42,7 @@ public class DemoManager : MonoBehaviour
             new MovementSystem(),
             new VIewInstanceSystem(m_BoidSettings),
             new VIewMovementSystem(),
-            new ECS.Experimental.TestCollectionSystem());
+            new ECS.Core.Experimental.TestCollectionSystem());
 
     void BuildWorld(int entityCount)
     {
@@ -50,15 +50,15 @@ public class DemoManager : MonoBehaviour
 
         m_World = new ECSWorld(PrduseMasterSystem());
 
-        //for (var i = 0; i < entityCount; i++)
-        //    BuildBoidEnitity(m_World);
+        for (var i = 0; i < entityCount; i++)
+            BuildBoidEnitity(m_World);
 
-        var builder = EntityLazyBuilder.New(m_World);
+        var builder = EntityLazyBuilder.New(m_World.UID);
 
         builder += new TransformComponent();
-        builder += new ECS.Experimental.ComponentWithReferences()
+        builder += new ECS.Core.Experimental.ComponentWithReferences()
         {
-            IntCollection = m_World.AllocateCollection<int>(10)
+            IntCollection = ECS.Core.Experimental.Collections.CollectionPtr<int>.Allocate(m_World.UID, 10)
         };
 
         builder.BuildNow();
@@ -77,7 +77,7 @@ public class DemoManager : MonoBehaviour
     {
         var boidSettings = m_BoidSettings[Random.Range(0, m_BoidSettings.Length)];
 
-        var builder = EntityLazyBuilder.New(world);
+        var builder = EntityLazyBuilder.New(world.UID);
 
         builder += new BehaviourComponent()
         {
@@ -184,7 +184,7 @@ public class DemoManager : MonoBehaviour
 
             GUILayout.EndHorizontal();
 
-            GUILayout.Label($"Next entity: {m_World.EntityAllocator.NextEntityUID}");
+            GUILayout.Label($"Next entity: {ECS.Core.EntityAllocatorComponenent.Get(m_World.UID).NextEntityUID}");
 
             if (m_Snapshot != null)
                 GUILayout.Label($"Snapshot Count: {m_Snapshot.Count}");
@@ -211,8 +211,8 @@ public class DemoManager : MonoBehaviour
             //foreach (var c in ECS.Core.SharedComponentMap.ComponentsForWorld(m_World.UID))
             //    GUILayout.Label($"{c.Key} : {c.Value.GetType().FullName}");
 
-            foreach (var kvp in ECS.Core.ComponentTypeUtility.Types)
-                GUILayout.Label($"{kvp.Key} : {kvp.Value.FullName}");
+            //foreach (var kvp in ECS.Core.ComponentTypeUtility.Types)
+            //    GUILayout.Label($"{kvp.Key} : {kvp.Value.FullName}");
 
         }
         GUILayout.EndVertical();

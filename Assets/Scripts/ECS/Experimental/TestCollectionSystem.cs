@@ -1,4 +1,4 @@
-﻿namespace ECS.Experimental
+﻿namespace ECS.Core.Experimental
 {
     public class TestCollectionSystem : BaseSystem
     {

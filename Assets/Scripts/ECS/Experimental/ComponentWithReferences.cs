@@ -1,7 +1,7 @@
 ﻿using ECS.Core.Ptr;
-using ECS.Experimental.Collections;
+using ECS.Core.Experimental.Collections;
 
-namespace ECS.Experimental
+namespace ECS.Core.Experimental
 {
     /// <summary>
     /// Demo component that shows, how collection storage may be implemented;
@@ -29,6 +29,6 @@ namespace ECS.Experimental
         [UnityEngine.SerializeField]
         EntityPtr m_TransformEntityPtr;
 
-        void IComponent.Register(in int world, in int entity) => Core.ComponentMap<ComponentWithReferences>.TryAddOrSet(world, entity, this);
+        void IComponent.Register(in int world, in int entity) => ComponentMap<ComponentWithReferences>.TryAddOrSet(world, entity, this);
     }
 }

@@ -1,9 +1,7 @@
-﻿using ECS.Core;
-
-namespace ECS.Experimental.Collections
+﻿namespace ECS.Core.Experimental.Collections
 {
     [System.Serializable]
-    public struct CollectionPtr<TElement> where TElement : struct
+    public struct CollectionPtr<TElement> : System.IDisposable where TElement : struct
     {
         public delegate void ForEachProcessorDelegate(ref TElement element, in int index);
 
@@ -37,17 +35,17 @@ namespace ECS.Experimental.Collections
 
         void Set(in int index, in TElement value)
         {
-            var targetIndex = ValidateIndexRange(index);
-            ComponentMap<CollectionElementComponent<TElement>>.TryAddOrSet(m_Elements.World, targetIndex, CollectionElementComponent<TElement>.WithValue(value));
+            var entity = ValidateIndexRange(index);
+            ComponentMap<CollectionElementComponent<TElement>>.TryAddOrSet(m_Elements.World, entity, CollectionElementComponent<TElement>.WithValue(value));
         }
 
         int ValidateIndexRange(int index)
         {
-            var targetIndex = m_Elements.Start + index;
-            if (targetIndex < 0 || targetIndex >= Length)
+            if (index < 0 || index >= Length)
                 throw new System.IndexOutOfRangeException();
 
-            return targetIndex;
+            var entity = m_Elements.IndexToEntity(index);
+            return entity;
         }
 
         public void ForEach(ForEachProcessorDelegate processor)
@@ -69,10 +67,53 @@ namespace ECS.Experimental.Collections
             return result;
         }
 
+        public void CopyTo(ref CollectionPtr<TElement> other, in int offset = 0)
+        {
+            for(var i = System.Math.Max(0, offset); i < System.Math.Min(Length, other.Length); i++)
+                other[i] = Get(i);
+        }
+
+        public CollectionPtr<TElement> CloneWithSize(in int length)
+        {
+            var newCollection = Allocate(m_Elements.World, length);
+            CopyTo(ref newCollection);
+            return newCollection;
+        }
+
+        public CollectionPtr<TElement> CloneWith(in CollectionPtr<TElement> other)
+        {
+            var newCollection = CloneWithSize(Length + other.Length);
+            other.CopyTo(ref newCollection, Length);
+
+            return newCollection;
+        }
+
         public static implicit operator EntityRangePtr(CollectionPtr<TElement> collection) => 
             collection.m_Elements;
 
         public static CollectionPtr<TElement> New(EntityRangePtr entityRange) => 
             new CollectionPtr<TElement>(entityRange);
+
+        public static CollectionPtr<TElement> Allocate(in int world, in int length) =>
+            AllocateViaCommandBuffer(world, length, new DirectCommandBufferConcatenator());
+
+        public static CollectionPtr<TElement> AllocateViaCommandBuffer(in int world, in int length, in ICommandBufferConcatenator commandBuffer)
+        {
+            var allocator = EntityAllocatorComponenent.Get(world);
+
+            var entityRangePtp = new EntityRangePtr(world, allocator.NextEntityUID, length);
+            for (var i = 0; i < length; i++)
+                commandBuffer.TryAddOrSetComponent(world, allocator.AllocateUID, new CollectionElementComponent<TElement>());
+
+            EntityAllocatorComponenent.Set(world, allocator);
+
+            return New(entityRangePtp);
+        }
+
+        public void Dispose()
+        {
+            for (var entity = m_Elements.Start; entity < m_Elements.Start + m_Elements.Length; entity++)
+                ComponentMap<CollectionElementComponent<TElement>>.Remove(m_Elements.World, entity);
+        }
     }
 }

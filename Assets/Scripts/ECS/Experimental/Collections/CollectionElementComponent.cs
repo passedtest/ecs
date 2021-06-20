@@ -1,4 +1,4 @@
-﻿namespace ECS.Experimental.Collections
+﻿namespace ECS.Core.Experimental.Collections
 {
     [System.Serializable]
     public struct CollectionElementComponent<TElement> : IComponent where TElement : struct
@@ -24,7 +24,7 @@
         }
 
         void IComponent.Register(in int world, in int entity) =>
-            Core.ComponentMap<CollectionElementComponent<TElement>>.TryAddOrSet(world, entity, this);
+            ComponentMap<CollectionElementComponent<TElement>>.TryAddOrSet(world, entity, this);
 
         public static CollectionElementComponent<TElement> WithValue(TElement value)
         {
@@ -35,7 +35,7 @@
     }
 
     [System.AttributeUsage(System.AttributeTargets.Struct, AllowMultiple = false)]
-    public class RequireCollectionOfTypeAttribute : Core.RequireGenericComponenentTypeAttribute
+    public class RequireCollectionOfTypeAttribute : RequireGenericComponenentTypeAttribute
     {
         public RequireCollectionOfTypeAttribute(params System.Type[] collectionTypes) : base(ToCollectionComponentTypes(collectionTypes)) { }
 
