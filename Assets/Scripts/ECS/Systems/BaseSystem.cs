@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ECS
+﻿namespace ECS
 {
     public abstract class BaseSystem : Core.ISystem
     {

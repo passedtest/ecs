@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using ECS.Core.Ptr;
+using UnityEngine;
 
 namespace ECS.Core.Experimental.Collections
 {
@@ -24,6 +25,10 @@ namespace ECS.Core.Experimental.Collections
             m_Length = length;
         }
 
-        public int IndexToEntity(int index) => m_Start + index;
+        public EntityPtr this[in int index] =>
+            new EntityPtr(m_World, IndexToEntity(index));
+
+        public int IndexToEntity(int index) => 
+            m_Start + index;
     }
 }

@@ -13,6 +13,9 @@ namespace ECS.Core.Maps
             m_WorldEntities = new Dictionary<int, SharedComponentsByEntity>();
         }
 
+        public bool EntityExists(in int world, in int entity) =>
+            m_WorldEntities.TryGetValue(world, out var enitityCollection) && enitityCollection.EntityExists(entity);
+
         public bool TryAllocateEntityIfNotExists(in int world, in int entity)
         {
             if (!m_WorldEntities.TryGetValue(world, out var enitityCollection))
@@ -38,7 +41,7 @@ namespace ECS.Core.Maps
         public bool TryGetComponenents(in int world, in int entity, out HashSet<int> componenentTypes)
         {
             componenentTypes = default;
-            return m_WorldEntities.TryGetValue(world, out var byEntityCollection) && byEntityCollection.Entities.TryGetValue(entity, out componenentTypes);
+            return m_WorldEntities.TryGetValue(world, out var enitityCollection) && enitityCollection.Entities.TryGetValue(entity, out componenentTypes);
         }
     }
 }

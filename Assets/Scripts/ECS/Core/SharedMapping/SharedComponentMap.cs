@@ -56,6 +56,16 @@ namespace ECS.Core
                 ComponentsRemovedForEntity(world, entity);
         }
 
+        public static void CopyEntityToWorld(in int world, in int entity, in int targetWorld)
+        {
+            if (!s_Entities.TryGetComponenents(world, entity, out var componentTypes))
+                throw new InvalidOperationException();
+
+            foreach (var componentTypeHash in componentTypes)
+                if (TryGetComponentInternal(world, entity, componentTypeHash, out var component))
+                    component.Register(targetWorld, entity);
+        }
+
         protected static bool TryRegisterComponentType(in int world, in int entity, in int typeHash)
         {
             var typeRegistred = s_Entities.TryRegisterComponentType(world, entity, typeHash);
@@ -92,20 +102,26 @@ namespace ECS.Core
                 kvp.Value.Register(snapshot.World, kvp.Key);
         }
 
+        public static bool EntityExists(in int world, in int entity) =>
+            s_Entities.EntityExists(world, entity);
+
         public static bool TryGetComponent<TComponent>(in int world, in int entity, out IComponent component) where TComponent : struct, IComponent =>
             TryGetComponent(world, entity, typeof(TComponent), out component);
 
-        public static bool TryGetComponent(in int world, in int entity, in Type componentType, out IComponent component)
+        public static bool TryGetComponent(in int world, in int entity, in Type componentType, out IComponent component) => 
+            TryGetComponentInternal(world, entity, ComponentTypeUtility.HashCodeOf(componentType), out component);
+
+        static bool TryGetComponentInternal(in int world, in int entity, in int componentTypeHash, out IComponent component)
         {
             component = default;
-            return s_TrackedMaps.TryGetValue(ComponentTypeUtility.HashCodeOf(componentType), out var componentMap) && componentMap.ComponentProvider_Internal(world, entity, out component);
+            return s_TrackedMaps.TryGetValue(componentTypeHash, out var componentMap) && componentMap.ComponentProvider_Internal(world, entity, out component);
         }
 
         public static IComponent GetOrProduseComponent<TComponent>(in int world, in int entity) where TComponent : struct, IComponent =>
             TryGetComponent<TComponent>(world, entity, out var compoenent) ? compoenent : ProduseComponennt<TComponent>();
 
         public static bool CheckCollision(in int world, in int entity, HashSet<int> colliectionToCheck) =>
-            s_Entities.TryGetComponenents(world, entity, out var componenetns) && componenetns.Overlaps(colliectionToCheck);
+            s_Entities.TryGetComponenents(world, entity, out var components) && components.Overlaps(colliectionToCheck);
 
         public static bool CheckSubsetCollision(in int world, in int entity, HashSet<int> colliectionToCheck)
         {

@@ -48,12 +48,19 @@ namespace ECS.Core
         public static bool TryAdd(in int world, in int entity, in TComponent component) =>
             TryRegisterComponentType(world, entity, s_Type.HashCode) && s_Components.TryAddOrSetComponent(world, entity, component);
 
+
+        /// <summary>
+        /// TODO: Unexpected return bool behaviour, maybe change it to void?
+        /// </summary>
         public static bool TryAddOrSet(in int world, in int entity, in TComponent component) =>
             TryRegisterComponentType(world, entity, s_Type.HashCode) & s_Components.TryAddOrSetComponent(world, entity, component);
 
         public static bool Remove(in int world, in int entity) =>
             TryRemoveComponentType(world, entity, s_Type.HashCode) && s_Components.RemoveComponent(world, entity);
         #endregion
+
+        public static bool ComponentExists(in int world, in int entity) =>
+            TryGet(world, entity, out _);
 
         public static bool TryGet(in int world, in int entity, out TComponent component) =>
             s_Components.TryGetComponent(world, entity, out component);

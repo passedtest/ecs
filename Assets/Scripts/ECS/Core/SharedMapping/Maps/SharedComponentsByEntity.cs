@@ -23,6 +23,8 @@ namespace ECS.Core.Maps
             return !hasEntity;
         }
 
+        public bool EntityExists(in int entity) => m_TypesByEntity.ContainsKey(entity);
+
         public bool TryRemoveComponent(in int entity, in int typeHash) =>
             m_TypesByEntity.TryGetValue(entity, out var types) && types.Remove(typeHash);
 

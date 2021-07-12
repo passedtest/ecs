@@ -1,8 +1,8 @@
 ﻿namespace ECS.Core.Ptr
 {
-    public struct ComponentPtr<TComponenent> where TComponenent : struct, IComponent
+    public struct ComponentPtr<TComponenent> : IPtr where TComponenent : struct, IComponent
     {
-        public bool IsValid => ComponentMap<TComponenent>.TryGet(m_EntityPtr.World, m_EntityPtr.Entity, out _);
+        public bool IsValid => ComponentMap<TComponenent>.ComponentExists(m_EntityPtr.World, m_EntityPtr.Entity);
 
         readonly EntityPtr m_EntityPtr;
 
@@ -13,11 +13,14 @@
 
         public TComponenent Get()
         {
-            if (!ComponentMap<TComponenent>.TryGet(m_EntityPtr.World, m_EntityPtr.Entity, out var componenent))
+            if (!TryGet(out var component))
                 throw new System.InvalidOperationException();
 
-            return componenent;
+            return component;
         }
+
+        public bool TryGet(out TComponenent component) =>
+            ComponentMap<TComponenent>.TryGet(m_EntityPtr.World, m_EntityPtr.Entity, out component);
 
         public void Set(in TComponenent component) =>
             ComponentMap<TComponenent>.TryAddOrSet(m_EntityPtr.World, m_EntityPtr.Entity, component);
